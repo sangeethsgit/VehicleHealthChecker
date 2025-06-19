@@ -1,14 +1,24 @@
-import streamlit as st
 import pandas as pd
-import seaborn as sns
 import matplotlib.pyplot as plt
+import streamlit as st
+import seaborn as sns
 
-st.title("Engine Health Score vs Vehicle Load")
+df=pd.read_csv(r"D:\CDAC Internship\DOCS\vehicle_dataset_1000-2.csv")
+df['Load Bin'] = pd.cut(df['Vehicle Load (kg)'], bins=20)
 
-df = pd.read_csv(r"D:\CDAC Internship\DOCS\vehicle_dataset_1000.csv")
-df.columns = df.columns.str.strip()
-
+grouped = df.groupby('Load Bin').agg({
+    'Vehicle Load (kg)': 'mean',
+    'Engine Health Score': 'mean'
+})
 
 fig, ax = plt.subplots()
-sns.scatterplot(data=df, x="Vehicle Load (kg)", y="Engine Health Score", ax=ax)
+sns.lineplot(
+    x='Vehicle Load (kg)', 
+    y='Engine Health Score', 
+    data=grouped, 
+    ax=ax
+)
+
+ax.set_xlabel('Average Vehicle Load per Bin (kg)')
+ax.set_ylabel('Average Engine Health Score')
 st.pyplot(fig)
